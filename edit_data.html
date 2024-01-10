@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Customer Data</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <h1>Edit Customer Data</h1>
+
+  <form id="editForm">
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" required><br>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" required><br>
+
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="street" required><br>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" required><br>
+
+    <label for="city">City:</label>
+    <input type="text" id="city" name="city" required><br>
+
+    <label for="state">State:</label>
+    <input type="text" id="state" name="state" required><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" name="phone" required><br>
+
+    <button type="button" onclick="updateData()">Update</button>
+  </form>
+
+  <!-- External script for Axios library -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <!-- JavaScript code for functionality -->
+  <script>
+    // Function to update customer data
+    async function updateData() {
+      // Extract UUID and form input values
+      const urlParams = new URLSearchParams(window.location.search);
+      const uuid = urlParams.get('uuid');
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const street = document.getElementById('street').value;
+      const address = document.getElementById('address').value;
+      const city = document.getElementById('city').value;
+      const state = document.getElementById('state').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      
+      // Prepare updated data object
+      const updatedData = {
+        firstName,
+        lastName,
+        street,
+        address,
+        city,
+        state,
+        email,
+        phone,
+      };
+
+      // Display alert and navigate to customers.html
+      alert('Data updated');
+      window.location.href = 'customers.html';
+
+      try {
+        // Make an Axios POST request to update customer data
+        const response = await axios.post(`http://localhost:3000/update_customer/${uuid}`, updatedData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true, // Include credentials in the request
+        });
+
+        // Check if the update was successful
+        if (response.status === 200) {
+          console.log('Customer data updated successfully');
+          window.location.href = 'customers.html'; // Redirect to customers.html
+        } else {
+          console.error('Failed to update customer data');
+          // Handle failure appropriately
+        }
+      } catch (error) {
+        console.error('Error updating customer data:', error.message);
+        // Handle error appropriately
+      }
+    }
+
+    // Function to populate form with existing data
+    function populateForm() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const firstName = urlParams.get('firstName');
+      const lastName = urlParams.get('lastName');
+      const street = urlParams.get('street');
+      const address = urlParams.get('address');
+      const city = urlParams.get('city');
+      const state = urlParams.get('state');
+      const email = urlParams.get('email');
+      const phone = urlParams.get('phone');
+
+      // Set form input values
+      document.getElementById('firstName').value = firstName;
+      document.getElementById('lastName').value = lastName;
+      document.getElementById('street').value = street;
+      document.getElementById('address').value = address;
+      document.getElementById('city').value = city;
+      document.getElementById('state').value = state;
+      document.getElementById('email').value = email;
+      document.getElementById('phone').value = phone;
+    }
+
+    // Trigger the populateForm function when the window loads
+    window.onload = populateForm;
+  </script>
+
+</body>
+
+</html>

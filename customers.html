@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer List</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <h1>Customer List</h1>
+  <button onclick="createNewData()">Create New Data</button>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>UUID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Street</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="customerTableBody"></tbody>
+  </table>
+
+  <!-- JavaScript code for fetching and displaying data -->
+  <script>
+    // Function to fetch customer data from the server
+    function fetchData() {
+      fetch('http://localhost:3000/get_customer_list', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'JSESSIONID=7C611C611ED02F5CE7239F0CBB0177D1',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          const customerTableBody = document.getElementById('customerTableBody');
+          customerTableBody.innerHTML = '';
+
+          // Loop through each customer and create table rows
+          data.forEach(customer => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${customer.uuid}</td>
+              <td>${customer.first_name}</td>
+              <td>${customer.last_name}</td>
+              <td>${customer.street}</td>
+              <td>${customer.address}</td>
+              <td>${customer.city}</td>
+              <td>${customer.state}</td>
+              <td>${customer.email}</td>
+              <td>${customer.phone}</td>
+              <td>
+                <button style="background-color: blue; color: white;" onclick="editCustomer('${customer.uuid},${customer.first_name},${customer.last_name},${customer.street},${customer.address},${customer.city},${customer.state},${customer.email},${customer.phone}')">Edit</button>
+                <button style="background-color: red; color: white;" onclick="deleteCustomer('${customer.uuid}')">Delete</button>
+              </td>
+            `;
+            customerTableBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          // Handle error appropriately
+        });
+    }
+
+    // Function to navigate to the create data page
+    function createNewData() {
+      window.location.href = 'insert_data.html';
+    }
+
+    // Function to navigate to the edit data page with customer details
+    function editCustomer(params) {
+      const [
+        uuid,
+        firstName,
+        lastName,
+        street,
+        address,
+        city,
+        state,
+        email,
+        phone
+      ] = params.split(',');
+
+      window.location.href = `edit_data.html?uuid=${uuid}&firstName=${firstName}&lastName=${lastName}&street=${street}&address=${address}&city=${city}&state=${state}&email=${email}&phone=${phone}`;
+    }
+
+    // Function to delete a customer
+    function deleteCustomer(uuid) {
+      console.log('Delete customer:', uuid);
+
+      fetch(`http://localhost:3000/delete_customer/${uuid}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer dGVzdEBzdW5iYXNlZGF0YS5jb206VGVzdEAxMjM=',
+            'Cookie': 'JSESSIONID=7C611C611ED02F5CE7239F0CBB0177D1',
+          },
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Customer deleted successfully:', data);
+          // Fetch updated data after deletion
+          fetchData();
+          // Display success message
+          alert('Data deleted.');
+        })
+        .catch(error => {
+          console.error('Error deleting customer:', error);
+          // Display error message
+          alert('Error deleting data.');
+        });
+    }
+
+    // Initial fetch of data when the page loads
+    fetchData();
+  </script>
+
+</body>
+
+</html>

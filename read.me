@@ -1,0 +1,16 @@
+
+
+run : npm install 
+
+run : node app.js
+
+click on index.html 
+
+
+
+To address the CORS issue, I implemented a CORS middleware using Axios on the Express.js server. 
+By utilizing the cors package, I enabled cross-origin resource sharing for specific routes. 
+The middleware was configured to allow credentials and handle preflight requests, ensuring a secure connection between the HTML UI and the server. 
+This resolved the XMLHttpRequest CORS error, enabling seamless integration with the provided APIs. 
+The setup allowed successful authentication, creation, retrieval, deletion, and updating of customer records through the HTML interface. 
+The implementation facilitated smooth communication between the UI and the backend API services, ensuring a functional and secure application.

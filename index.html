@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Server Test</title>
+</head>
+
+<body>
+
+  <h1>Login</h1>
+  <!-- Form for user authentication -->
+  <form id="loginForm">
+    <label for="login_id">Username:</label>
+    <input type="text" id="login_id" name="login_id" required><br>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+
+    <button type="button" onclick="authenticateUser()">Login</button>
+  </form>
+
+  <!-- JavaScript code for authentication -->
+  <script>
+    // Function to authenticate user
+    function authenticateUser() {
+      // Get login ID and password from form input
+      const loginId = document.getElementById("login_id").value;
+      const password = document.getElementById("password").value;
+
+      // Make a fetch request to the proxy server
+      fetch('http://localhost:3000/proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'JSESSIONID=7C611C611ED02F5CE7239F0CBB0177D1',
+        },
+        // Send user credentials in the request body as JSON
+        body: JSON.stringify({
+          login_id: loginId,
+          password: password
+        })
+      })
+        .then(response => {
+          // Check if the response is OK
+          if (response.ok) {
+            return response.json(); // Parse the JSON response
+          } else {
+            throw new Error('Authentication failed');
+          }
+        })
+        .then(data => {
+          console.log('Response:', data);
+          // Check for success or specific conditions in data if needed
+
+          // Redirect to customer.html after successful authentication
+          window.location.href = 'customers.html';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Display an alert for authentication failure or internal server error
+          if (error.message === 'Authentication failed') {
+            alert('Authentication failed. Please check your credentials.');
+          } else {
+            alert('Internal Server Error. Please try again later.');
+          }
+        });
+    }
+
+  </script>
+
+</body>
+</html>
